@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>酒店管理系统</title>
+    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+    <style>
+        small{
+            color:#5e5e5e;
+        }
+        body{
+            background: url(/public/images/bg1.jpg);
+            background-size: cover;
+        }
+        .jumbotron{
+            background: rgba(255,255,255,.5);
+        }
+        form{
+            background: rgba(255,255,255,.5);
+            padding:20px 20px 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="padding-top:40px;">
+        <div class="jumbotron">
+            <h1>帝豪酒店欢迎您</h1>
+         </div>
+        <div class="form col-lg-6">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">注册账号</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="username" class="form-control" >
+                        <small>请输入自己的账号，账号为数字</small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">密码</label>
+                    <div class="col-sm-10">
+                        <input type="password" id="password" class="form-control">
+                        <small>请输入密码。</small>
+                    </div>
+                </div>
+                <div class="alert alert-danger" role="alert" id="tip" style="display: none;">
+
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button id="btn" type="button" class="btn btn-success">注册</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <a href="/" style="color: #0f0f0f">已有账号，去登录</a>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <script type="text/javascript" src="/public/js/jquery-1.12.3.min.js"></script>
+    <script type="text/javascript">
+        $("#btn").click(function(){
+            $.post("/doreg",{
+                "username" : $("#username").val(),
+                "password" : $("#password").val()
+            },function(data){
+                if(data.result == 1){
+                    alert('注册成功')
+                    window.location= "/";
+                }else{
+                   alert('注册失败')
+                }
+            });
+            $("input").focus(function(){
+                $("#tip").hide();
+            });
+        });
+        //账号失去焦点时，验证是否重复
+        $('#username').blur(function () {
+            var username = $(this).val();
+            $.get("checkusername?username=" + username,function (data) {
+                if(data.result == 1){
+                    $('#tip').html("用户名已存在,请重新输入用户名").show();
+                }
+            })
+        })
+        //账号获取焦点时，tip消失
+        $("#username").focus(function(){
+            $("#tip").hide();
+        });
+    </script>
+</body>
+</html>

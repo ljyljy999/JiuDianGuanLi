@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>酒店管理系统</title>
+
+    <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/public/css/dashboard.css" rel="stylesheet">
+    <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/public/css/dashboard.css" rel="stylesheet">
+    <!-- FONT AWESOME ICONS  -->
+    <link href="/public/css/font-awesome.css" rel="stylesheet" />
+    <!-- CUSTOM STYLE  -->
+    <link href="/public/css/style.css" rel="stylesheet" />
+    <script type="text/javascript" src="/public/js/PageNav.js"></script>
+    <script src="/public/js/jquery-1.12.3.min.js"></script>
+    <style>
+        body{
+            background: url(/public/images/bga5.jpg);
+            background-size: cover;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">帝豪酒店管理系统</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/tuichu">退出登录</a></li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="/admin">房类管理</a></li>
+                <li><a href="/admin/fangjianguanli">房间管理</a></li>
+                <li><a href="/admin/jiluchaxun">记录查询</a></li>
+                <li class="active"><a href="/admin/tuifangguanli">退房管理</a></li>
+                <li><a href="/admin/ruzhuguanli">入住管理</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h1 class="page-header">退房管理</h1>
+            <div style="background:rgba(255,255,255,0.5); padding:20px;">
+                <div class="row">
+                    <div class="col-md-2">
+                        <p>
+                            条件查询：
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p>
+                            <input type="text" class="form-control" placeholder="请输入房间号" id="searchname">
+                        </p>
+                    </div>
+                    <div class="col-md-2 col-sm-offset-2">
+                        <p>
+                            <input type="button" class="btn btn-warning"  id="btn" value="退房">
+                        </p>
+                    </div>
+                </div>
+                <table class="table" style="background:rgba(255,255,255,0.5);">
+                    <thead>
+                    <tr>
+                        <th>入住时间</th>
+                        <th>退房时间</th>
+                        <th>入住人</th>
+                        <th>联系人</th>
+                        <th>证件号</th>
+                        <th>性别</th>
+                        <th>房间号</th>
+                        <th>房间类型</th>
+                        <th>入住状态</th>
+                        <th>消费金额</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="pagenavbox"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    //姓名查询
+    $('#searchname').on("input",function () {
+        $("#tbody").empty();
+        $("#pagenavbox").empty();
+        var name = $('#searchname').val()
+        if(name != ""){
+            $.get('/user/searchfanghao/'+name,function (data) {
+                console.log(data);
+                $.each(data.results,function(i, n){
+                    //计算消费金额
+                    //1，计算天数
+                    var startTime = new Date(n.startdate);
+                    var endTime = new Date(n.enddate);
+                    var day = (endTime - startTime)/3600/1000/24;
+                    //2,价格
+                    var zongjie = day * n.jiage;
+
+                    //创建一个tr标签
+                    $tr = $("<tr></tr>");
+                    $("<td></td>").html(n.startdate).appendTo($tr);
+                    $("<td></td>").html(n.enddate).appendTo($tr);
+                    $("<td></td>").html(n.xingming).appendTo($tr);
+                    $("<td></td>").html(n.xingming).appendTo($tr);
+                    $("<td></td>").html(n.zhengjianhao).appendTo($tr);
+                    $("<td></td>").html(n.sex).appendTo($tr);
+                    $("<td></td>").html(n.fangjianhao).appendTo($tr);
+                    $("<td></td>").html(n.fangjianleixing).appendTo($tr);
+                    $("<td></td>").html("预定").appendTo($tr);
+                    $("<td></td>").html(zongjie +"元").appendTo($tr);
+                    //上树
+                    $tr.appendTo($("#tbody"));
+                });
+            })
+        }
+    })
+
+    //退房
+    $('#btn').click(function () {
+        var name = $('#searchname').val()
+        $.get("/user/dotuifang/"+name,function (data) {
+            alert(data);
+            window.location = '/admin/tuifangguanli';
+        })
+    })
+
+
+</script>
+</body>
+</html>
